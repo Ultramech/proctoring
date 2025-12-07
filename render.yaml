@@ -1,10 +1,15 @@
 services:
   - type: web
-    name: sih-proctor-2
+    name: futurproctor
     env: python
-    rootDirectory: futurproctor  # Sets the working folder
+    
+    # CRITICAL FIX: The path to your manage.py file from the very top of the repo
+    rootDirectory: sih-proctor-main/futurproctor
+    
+    # These commands run inside the folder defined above
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: gunicorn futurproctor.wsgi:application
+    
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.10
