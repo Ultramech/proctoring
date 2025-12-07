@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: sih-proctor-2
+    env: python
+    pythonVersion: 3.11
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn futurproctor.wsgi:application
