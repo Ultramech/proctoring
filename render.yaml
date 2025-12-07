@@ -2,8 +2,9 @@ services:
   - type: web
     name: futurproctor
     env: python
+    plan: free                 # <--- THIS ENSURES $0 COST
     
-    # FIX: The keyword is 'rootDir', not 'rootDirectory'
+    # FIX: Use 'rootDir', not 'rootDirectory'
     rootDir: sih-proctor-main/futurproctor
     
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
