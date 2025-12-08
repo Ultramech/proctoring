@@ -33,9 +33,9 @@ import io  # Handling in-memory file operations
 import qrcode  # QR code generation for certificate authenticity
 
 # Machine Learning Imports (Custom AI Models for Proctoring)
-from .ml_models.object_detection import detectObject  # Detecting objects in the exam environment
-from .ml_models.audio_detection import audio_detection  # Detecting external sounds for cheating detection
-from .ml_models.gaze_tracking import gaze_tracking # Tracking eye gaze to detect focus and distractions 
+# from .ml_models.object_detection import detectObject  # Detecting objects in the exam detection
+# from .ml_models.audio_detection import audio_detection  # Detecting external sounds for cheating detection
+# from .ml_models.gaze_tracking import gaze_tracking # Tracking eye gaze to detect focus and distractions 
 
 # from .ml_models.gaze_tracking import gaze_tracking  # Tracking eye gaze to detect focus and distractions
 

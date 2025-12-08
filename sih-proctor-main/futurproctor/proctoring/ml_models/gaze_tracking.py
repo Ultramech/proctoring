@@ -1,15 +1,24 @@
 import cv2
 import numpy as np
-import mediapipe as mp
+# Initialize MediaPipe Face Mesh lazily
+mp_face_mesh = None
+face_mesh = None
 
-# Initialize MediaPipe Face Mesh
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)
+def load_face_mesh():
+    global mp_face_mesh, face_mesh
+    if face_mesh is None:
+        import mediapipe as mp
+        mp_face_mesh = mp.solutions.face_mesh
+        face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)
+    return face_mesh
 
 def gaze_tracking(frame):
     """Detect gaze direction (left, right, center)."""
+    # Ensure model is loaded
+    mesh = load_face_mesh()
+    
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    results = face_mesh.process(frame_rgb)
+    results = mesh.process(frame_rgb)
 
     if results.multi_face_landmarks:
         for landmarks in results.multi_face_landmarks:
