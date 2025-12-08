@@ -7,7 +7,7 @@ services:
     # FIX: Use 'rootDir', not 'rootDirectory'
     rootDir: sih-proctor-main/futurproctor
     
-    buildCommand: pip install dlib-bin && pip install face-recognition==1.3.0 --no-deps && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: gunicorn futurproctor.wsgi:application
     
     envVars:
