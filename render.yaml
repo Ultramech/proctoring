@@ -7,7 +7,7 @@ services:
     # FIX: Use 'rootDir', not 'rootDirectory'
     rootDir: sih-proctor-main/futurproctor
     
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: gunicorn futurproctor.wsgi:application
     
     envVars:
