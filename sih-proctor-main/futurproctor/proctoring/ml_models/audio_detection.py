@@ -1,5 +1,3 @@
-import pyaudio
-import wave
 import numpy as np
 import time
 from threading import Thread
@@ -7,18 +5,27 @@ from threading import Thread
 # Parameters
 THRESHOLD = 2000  # Adjust based on environment
 CHUNK = 2048  # Larger chunk size for smoother audio
-FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 48000  # High-quality audio
 SOUND_END_DELAY = 4  # Time in seconds to stop recording after sound ends
 
-# Initialize the audio system
-p = pyaudio.PyAudio()
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+try:
+    import pyaudio
+    FORMAT = pyaudio.paInt16
+    
+    # Initialize the audio system
+    p = pyaudio.PyAudio()
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
+    
+    PYAUDIO_AVAILABLE = True
+except (ImportError, OSError):
+    # OSError can happen if PortAudio is not installed
+    PYAUDIO_AVAILABLE = False
+    print("Warning: PyAudio not available. Server-side audio detection disabled.")
 
 def record_segment(frames):
     """Converts audio frames to bytes."""
@@ -26,6 +33,14 @@ def record_segment(frames):
 
 def audio_detection():
     """Detects speaking and returns audio segments during speaking."""
+    if not PYAUDIO_AVAILABLE:
+        # Mock behavior for servers without audio hardware
+        time.sleep(1) # Simulate some processing time
+        return {
+            "audio_detected": False,
+            "audio_data": None
+        }
+
     print("Monitoring for speech during the exam...")
     sound_detected = False
     last_sound_time = 0
@@ -59,11 +74,16 @@ def audio_detection():
 
         except KeyboardInterrupt:
             break
+        except Exception as e:
+            print(f"Error in audio detection: {e}")
+            break
 
     print("Stopping audio detection...")
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    if 'stream' in globals():
+        stream.stop_stream()
+        stream.close()
+    if 'p' in globals():
+        p.terminate()
     return {
         "audio_detected": False,
         "audio_data": None
