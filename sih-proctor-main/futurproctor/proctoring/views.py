@@ -40,7 +40,7 @@ from .ml_models.gaze_tracking import gaze_tracking # Tracking eye gaze to detect
 # from .ml_models.gaze_tracking import gaze_tracking  # Tracking eye gaze to detect focus and distractions
 
 # Fix: Import face_recognition (Previously missing)
-import face_recognition  # Used for facial recognition, comparing student faces with stored images
+# import face_recognition  # Used for facial recognition, comparing student faces with stored images
 
 # Fix: Proper datetime handling for Nepal Time Zone (Asia/Kathmandu)
 import pytz  # For timezone handling
@@ -95,6 +95,7 @@ def registration(request):
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Convert to OpenCV image
 
             # Extract face encoding from the image
+            import face_recognition # Lazy import
             face_encoding = get_face_encoding(image)  # Function should return a list or None
             if face_encoding is None:  # No face detected
                 messages.error(request, "No face detected. Please try again.")
@@ -144,6 +145,7 @@ def registration(request):
 
 # Helper function to extract face encoding
 def get_face_encoding(image):
+    import face_recognition # Lazy import
     """
     Extracts face encoding from an image using the face_recognition library.
     - Detects faces in the image.
@@ -157,6 +159,7 @@ def get_face_encoding(image):
 
 # Helper function to match face encodings
 def match_face_encodings(captured_encoding, stored_encoding):
+    import face_recognition # Lazy import
     return face_recognition.compare_faces([stored_encoding], captured_encoding)[0]  # Compare encodings
 
 
@@ -334,6 +337,9 @@ stop_event = threading.Event()  # To stop background threads
 # Function to process each frame
 def process_frame(frame, request):
     """Process a single frame for cheating detection."""
+    from .ml_models.object_detection import detectObject # Lazy import
+    from .ml_models.gaze_tracking import gaze_tracking # Lazy import
+
     global warning
     labels, processed_frame, person_count, detected_objects = detectObject(frame)
     cheating_event = None
@@ -419,6 +425,8 @@ def upload_frame(request):
 def process_audio(request):
     """Continuously process audio for cheating detection."""
     global last_audio_detected_time, warning
+    
+    from .ml_models.audio_detection import audio_detection # Lazy import
 
     while not stop_event.is_set():  # Check if stop_event is triggered
         audio = audio_detection()

@@ -6,8 +6,15 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Initialize the YOLO model
-model = YOLO("yolo11s.pt")  # Replace with your YOLO model file
+# Initialize the YOLO model lazily
+model = None
+
+def load_model():
+    global model
+    if model is None:
+        logging.info("Loading YOLO model...")
+        model = YOLO("yolo11s.pt")  # Replace with your YOLO model file
+    return model
 
 # Confidence threshold
 CONFIDENCE_THRESHOLD = 0.5
@@ -42,15 +49,17 @@ def detectObject(frame, confidence_threshold=CONFIDENCE_THRESHOLD, resize_width=
         frame = cv2.resize(frame, (resize_width, int(resize_width * aspect_ratio)))
 
     try:
+        # Ensure model is loaded
+        local_model = load_model()
         # Perform object detection
-        results = model(frame)
+        results = local_model(frame)
 
         for result in results:
             for box in result.boxes.data.cpu().numpy():
                 x1, y1, x2, y2, score, class_id = box
 
                 if score > confidence_threshold:  # Apply confidence threshold
-                    label = model.names[int(class_id)]
+                    label = local_model.names[int(class_id)]
                     labels_this_frame.append((label, float(score)))
 
                     # Check for specific objects (cell phone, book, and person)
